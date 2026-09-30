@@ -23,8 +23,14 @@ This fork targets the Windows game assembly from STS2 `v0.111.0`, game commit
 - `pwsh -NoProfile -File tests/Test-BridgeGuards.ps1`: exercises the actual
   production queue and HTTP dispatch methods with a local test listener.
 - MCP entry-point and stdio protocol tests: see `mcp/tests/` and `mcp/README.md`.
-- In-game state/action validation: pending first load of the mod. These build
-  and bridge checks do not establish complete gameplay or multiplayer coverage.
+- In-game load on Windows `v0.111.0`: the local bridge reports mod `0.4.1`.
+- A real MCP stdio client initialized the server, called `get_game_state`, and
+  resumed the saved run with `menu_select(option="continue")`. The menu state
+  call took 49 ms in this one measurement; that is not model decision time.
+- The loaded run's rewards, gold, player HP, ascension, and relic description
+  were read as JSON without screenshots. Combat card play and multiplayer have
+  not been exercised on this version. These checks do not establish complete
+  gameplay coverage.
 
 The mod and manifest identify this fork build as `0.4.1`.
 
