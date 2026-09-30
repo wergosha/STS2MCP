@@ -6,7 +6,9 @@
 
 A mod for [**Slay the Spire 2**](https://store.steampowered.com/app/2868840/Slay_the_Spire_2/) that lets AI agents play the game. Exposes game state and actions via a localhost REST API, with an optional MCP server for Claude Desktop / Claude Code integration.
 
-Singleplayer and multiplayer (co-op) supported, plus full menu and lobby control: profile switching, character select (SP and MP host/client) with optional seed, multiplayer host / Steam-friend join / FastMP localhost join, multiplayer load lobby for resuming saved co-op runs, game-over dismissal, FTUE/tutorial popup handling, and Timeline visibility. Tested against STS2 `v0.103.2`.
+Singleplayer and multiplayer (co-op) supported, plus full menu and lobby control: profile switching, character select (SP and MP host/client) with optional seed, multiplayer host / Steam-friend join / FastMP localhost join, multiplayer load lobby for resuming saved co-op runs, game-over dismissal, FTUE/tutorial popup handling, and Timeline visibility.
+
+This fork of [Gennadiyev/STS2MCP](https://github.com/Gennadiyev/STS2MCP) builds against STS2 `v0.111.0` (commit `41cef1ea`). It fixes changed lobby APIs, a request queue bug, and installation of the Python MCP entry point. The bridge uses standard MCP and works independently of any particular Claude or Codex model. See [compatibility and validation](docs/compatibility-v0.111.md) and [Codex setup](mcp/README.md#setup-and-codex). Upstream previously documented gameplay testing against `v0.103.2`; a successful build does not establish that every screen or multiplayer flow has been tested on `v0.111.0`.
 
 > [!warning]
 > This mod allows external programs to read and control your game via a localhost API. Use at your own risk with runs you care less about.
