@@ -1,5 +1,59 @@
 # MCP Tools
 
+## Setup and Codex
+
+This is a standard MCP stdio server. It has no Claude-specific runtime or API
+dependency; Codex and other clients that support MCP stdio can launch it.
+The game mod must be running separately and exposes its REST API on
+`http://localhost:15526` by default. That URL is not an MCP HTTP endpoint.
+
+With Python 3.11+ and [uv](https://docs.astral.sh/uv/) installed, first check the
+server entry point and install the locked dependencies:
+
+```sh
+uv run --locked --directory /absolute/path/to/STS2MCP/mcp sts2-mcp --help
+```
+
+To register it with Codex, run this command yourself (it changes your Codex MCP
+configuration):
+
+```sh
+codex mcp add sts2 -- uv run --locked --directory /absolute/path/to/STS2MCP/mcp sts2-mcp --no-trust-env
+```
+
+On Windows, quote paths containing spaces. For clients launched from a desktop
+app, use an absolute path to `uv` if it is unavailable on the app's `PATH`.
+Reload the client's MCP connections after registering the server, then call
+`get_game_state`. `--no-trust-env` keeps requests to the local game API from
+using inherited proxy settings; omit it if your setup intentionally needs those
+settings. `--host` and `--port` select a different game API address.
+
+### Keeping tool usage small
+
+Read the game state when a decision needs fresh information, and keep a short
+summary of the run instead of repeating the full history. Use the state API for
+cards and enemy intents; screenshots are only needed for UI the API cannot
+describe. Do not poll while the game is waiting for your decision. During an
+enemy turn or an animation, allow the transition to finish before checking again.
+The supported state formats are `json` and `markdown`; choose whichever is
+easier to interpret for the current screen.
+
+Use `search_wiki` with a specific query and a small `limit` when an unfamiliar
+card or relic needs clarification. Request profile or Compendium summaries only
+when persistent progress matters. Card and reward indices can shift after an
+action, so use the current state before sending the next index. Do not retry a
+timed-out action blindly: read state first to see whether it already took effect.
+
+### Bridge checks without the game
+
+```sh
+uv run --locked --directory /absolute/path/to/STS2MCP/mcp python -m unittest discover -s tests -v
+```
+
+These tests launch the installed `sts2-mcp` entry point and exercise the MCP
+stdio protocol against a temporary local HTTP fixture. They do not connect to
+the game or change Codex configuration.
+
 ## Singleplayer
 
 | Tool | Scope | Description |

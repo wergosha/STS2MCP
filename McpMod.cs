@@ -19,7 +19,7 @@ namespace STS2_MCP;
 [ModInitializer("Initialize")]
 public static partial class McpMod
 {
-    public const string Version = "0.4.0";
+    public const string Version = "0.4.1";
     public const int DefaultPort = 15526;
     private const string ConfigFileName = "STS2_MCP.conf";
 
@@ -127,7 +127,7 @@ public static partial class McpMod
     private static void ProcessMainThreadQueue()
     {
         int processed = 0;
-        while (_mainThreadQueue.TryDequeue(out var action) && processed < 10)
+        while (processed < 10 && _mainThreadQueue.TryDequeue(out var action))
         {
             try { action(); }
             catch (Exception ex) { GD.PrintErr($"[STS2 MCP] Main thread action error: {ex}"); }
@@ -178,9 +178,14 @@ public static partial class McpMod
         {
             var request = context.Request;
             var response = context.Response;
-            response.Headers.Add("Access-Control-Allow-Origin", "*");
-            response.Headers.Add("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-            response.Headers.Add("Access-Control-Allow-Headers", "Content-Type");
+
+            // This local bridge serves MCP/HTTP clients, not browser pages.
+            // Reject browser-origin requests before any game action is dispatched.
+            if (!string.IsNullOrEmpty(request.Headers["Origin"]))
+            {
+                SendError(response, 403, "Browser-origin requests are not allowed");
+                return;
+            }
 
             if (request.HttpMethod == "OPTIONS")
             {
